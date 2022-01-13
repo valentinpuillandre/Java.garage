@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import controleur.Client;
 import controleur.Technicien;
+import controleur.Vehicule;
 
 public class Modele {
 
@@ -251,4 +252,86 @@ public class Modele {
 			System.out.println("Erreur execution requete : " + requete);
 		}
 	}
+/***************************** gestion des vehicule *******************/
+	
+	//********************** Insérer un vehicule ***************************
+	public static void insertVehicule(Vehicule unVehicule)
+	{
+		String requete = "insert into vehicule values(null,'" + unVehicule.getMatricule() + "','" +unVehicule.getMarque()
+		+"','"+unVehicule.getEnergie() + "','"+ unVehicule.getNbkm() + "','" + unVehicule.getDatecirculation()+"','"
+				+ unVehicule.getIdclient()+"');";
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			unStat.execute(requete);
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+	}
+	
+	////////////////////////****************************lister les véhicules d'une personne **************************
+	public static ArrayList<Vehicule> selectAllVehicules (int idclient)
+	{
+		ArrayList<Vehicule> lesVehicules = new ArrayList<Vehicule>();
+		String requete ;
+		if(idclient == 0)
+		{
+		requete = "select * from vehicule ; ";
+		}
+		else
+		{
+		requete = "select * from vehicule where idclient = "+idclient +" ; ";
+		}
+	
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			ResultSet desResultats = unStat.executeQuery(requete); //fetchAll de PHP
+			//parcours des résultats ppur construire des instances de clients
+			while (desResultats.next())
+			{
+				Vehicule unVehicule = new Vehicule(
+			desResultats.getInt("idvehicule"), desResultats.getInt("idvehicule"),
+			desResultats.getString("matricule"), 
+			desResultats.getString("marque"), desResultats.getString("energie"), 
+			desResultats.getInt("nbkm"), desResultats.getString("datecirculation")
+						);
+				lesVehicules.add(unVehicule);
+			}
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		return lesVehicules;
+	}
+	public static void deleteVehicule (int  idvehicule)
+	{
+		String requete = "delete from vehicule where idvehicule = " + idvehicule + ";";
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			unStat.execute(requete);
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		
+	}
+	
 	}

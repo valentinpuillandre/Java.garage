@@ -8,7 +8,7 @@ public class Garage {
 
 	private C_Client unControleurClient = new C_Client();
 	private C_Technicien unControleurTechnicien = new C_Technicien();
-	
+	private C_Vehicule unControleurVehicule = new C_Vehicule();
 	
 	public void menuGeneral ()
 	{
@@ -27,7 +27,7 @@ public class Garage {
 			{
 			case 1 : unControleurClient.menuClient(); break;
 			case 2 : unControleurTechnicien.menuTechnicien();break;
-			case 3 : break;
+			case 3 : unControleurVehicule.menuVehicule (); break;
 			case 4 : break;
 			case 5 : break;
 			case 6 : break;
