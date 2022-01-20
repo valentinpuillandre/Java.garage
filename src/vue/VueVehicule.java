@@ -46,7 +46,7 @@ public class VueVehicule {
 		return chaine;
 	}
 	
-public static int saisirId()
+public static int saisirIdVehicule()
 {
 	System.out.println("Donner un Id vehicule : ");
 	int idvehicule = Console.saisirInt();

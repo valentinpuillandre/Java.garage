@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import modele.Modele;
 import vue.Console;
 import vue.VueClient;
+import vue.VueVehicule;
 
 
 public class C_Client {
@@ -33,8 +34,21 @@ public class C_Client {
 	{
 		//on appelle la vue pour avoir un id client à retirer 
 		int idclient = VueClient.saisirIdClient();
+		//on appelle le modèle pour vérifier s'il y a un client avec cet id, si 
+		// c'est le cas on supprime, sinon on affiche d'erreur
+		Client unClient  = Modele.selectWhereClients(idclient);
+		if(unClient !=null)
+		{
+			Modele.deleteClient(idclient);
+		}
+		else
+		{
+			System.out.println("Aucun client avec cet ID ! ");
+		}
+		
+		
 		// on appelle le modele pour supprimer de la BDD le client identifié par id 
-		Modele.deleteClient(idclient);
+		
 	}
 	
 	public void modifierClient ()
@@ -51,6 +65,22 @@ public class C_Client {
 		Modele.updateClient(unClient);
 		}
 	}
+	public void vehiculesClient()
+	{
+		//on appelle la vue pour récupérer l'id du client
+		int idclient = VueClient.saisirIdClient();
+		
+		//on appelle le modèle pour récupérer la liste des véhicules de ce client
+		ArrayList<Vehicule> lesVehicules = Modele.selectAllVehicules(idclient);
+		
+		//on affichedes véhicules
+		System.out.println("_____Liste des véhicules de ce client ________");
+		for (Vehicule unVehicule : lesVehicules)
+		{
+			VueVehicule.afficherVehicule(unVehicule);
+		}
+	}
+	
 	public void menuClient ()
 	{
 		int choix = 0; 
@@ -70,7 +100,7 @@ public class C_Client {
 			case 2 : this.listerClients(); break;
 			case 3 : this.retirerClient(); break;
 			case 4 : this.modifierClient(); break;
-			case 5 : break;
+			case 5 : this.vehiculesClient();break;
 			case 6 : break;
 			}
 		}

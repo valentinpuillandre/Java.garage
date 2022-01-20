@@ -49,3 +49,14 @@ create table client
 	foreign key (idtechnicien) references technicien (idtechnicien),
 	foreign key(idvehicule) references vehicule(idvehicule)
 		);
+
+Créer une view avec client 	(nom,prenom)
+technicien(nom,prenom), vehicule(matricule),
+intervention (description, dateinter)
+
+create view tableaudebord as  (select c.nom as nomc,c.prenom as prenomc, t.nom as nomt,t.prenom as prenomt,v.matricule,i.description,i.dateinter 
+							from client c, technicien t, vehicule v, intervention i
+							where c.idclient = v.idclient
+							and t.idtechnicien = i.idtechnicien
+							and v.idvehicule = i.idvehicule);
+	insert into tableaudebord values ("puillandre")

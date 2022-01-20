@@ -6,6 +6,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import controleur.Client;
+import controleur.Intervention;
+import controleur.TableauBord;
+
 import controleur.Technicien;
 import controleur.Vehicule;
 
@@ -332,6 +335,198 @@ public class Modele {
 			System.out.println("Erreur execution requete : " + requete);
 		}
 		
+	}
+
+	public static int count(String table) {
+		int nb = 0;
+		String requete = "select count(*) as nb from " + table + ";";
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			ResultSet unResultat = unStat.executeQuery(requete);
+			if(unResultat.next())
+			{
+				nb = unResultat.getInt("nb");
+			}
+			unStat.close();
+			uneBdd.seDeconnecter();
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		return nb;
+	}
+
+//********************************TABLEAU DE BORD**************************************************
+	public static ArrayList<TableauBord> selectAllTableauBord ()
+	{
+		ArrayList<TableauBord> lesTableauBords = new ArrayList<TableauBord>();
+		String requete ;
+		
+		requete = "select * from tableaudebord ; ";
+		
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			ResultSet desResultats = unStat.executeQuery(requete); //fetchAll de PHP
+			//parcours des résultats ppur construire des instances de clients
+			while (desResultats.next())
+			{
+				TableauBord unTableauBord= new TableauBord(
+			desResultats.getString("nomc"), desResultats.getString("prenomc"),
+			desResultats.getString("nomt"), 
+			desResultats.getString("prenomt"), desResultats.getString("matricule"), 
+			desResultats.getString("description"), desResultats.getString("dateinter")
+						);
+				lesTableauBords.add(unTableauBord);
+			}
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		return lesTableauBords;
+	}
+	
+/***************************** gestion des interventions *******************/
+	
+	//********************** Insérer une intervention ***************************
+	public static void insertIntervention(Intervention uneIntervention)
+	{
+		String requete = "insert into intervention values(null,'" + uneIntervention.getDescription() + "','" +uneIntervention.getPrix()
+		+"','"+ uneIntervention.getDateinter()+ "','"+ uneIntervention.getIdvehicule() + "','" + uneIntervention.getIdtechnicien()+"');";
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			unStat.execute(requete);
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+	}
+	
+	////////////////////////****************************lister les véhicules d'une personne **************************
+	public static ArrayList<Intervention> selectAllInterventions (int id, int choix)
+	{
+		ArrayList<Intervention> lesInterventions = new ArrayList<Intervention>();
+		String requete ;
+		
+		switch(choix)
+		{
+		case 1 : requete ="select * from intervention where idtechnicien = " +id +";";break;
+		case 2 : requete ="select * from intervention where idvehicule = " +id +";";break;
+		case 3 : requete =" select i.idintervention, i.description, i.prix, i.dateinter,i.idvehicule, idtechnicien "
+				+ "from intervention i, client c, vehicule v"
+				+ "where i.idvehicule = v.idvehicule"
+				+ "and v.idclient = c.idclient;"
+				+ "and  c.idclient = " + id ;break;
+		default  : requete ="select * from intervention ;";break;
+		}
+		
+		requete = "select * from intervention ; ";
+	
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			ResultSet desResultats = unStat.executeQuery(requete); //fetchAll de PHP
+			//parcours des résultats ppur construire des instances de clients
+			while (desResultats.next())
+			{
+				Intervention uneIntervention = new Intervention(
+			desResultats.getInt("idIntervention"), desResultats.getInt("idvehicule"),
+			desResultats.getInt("idtechnicien"), 
+			desResultats.getString("description"), desResultats.getString("dateinter"), 
+			desResultats.getFloat("prix")
+						);
+				lesInterventions.add(uneIntervention);
+			}
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		return lesInterventions;
+	}
+	public static void deleteIntervention (int  idintervention)
+	{
+		String requete = "delete from intervention where idintervention = " + idintervention + ";";
+		
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			unStat.execute(requete);
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		
+	}
+	
+	public static Intervention selectWhereIntervention ( int idintervention)
+	{
+		
+		Intervention unIntervention = null;
+		String requete = "select * from intervention where idintervention = " + idintervention + " ; ";
+		try {
+			uneBdd.seConnecter();
+			Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+			ResultSet unResultat = unStat.executeQuery(requete); //fetchAll de PHP
+			//extraire un résultat et construire une seule instanc client
+			if (unResultat.next())
+			{
+				unIntervention = new Intervention(
+						unResultat.getInt("idIntervention"), unResultat.getInt("idvehicule"),
+						unResultat.getInt("idtechnicien"), 
+						unResultat.getString("description"), unResultat.getString("dateinter"), 
+						unResultat.getFloat("prix")
+									);
+			}
+			unStat.close();
+			uneBdd.seDeconnecter();
+
+		}
+		catch(SQLException exp)
+		{
+			System.out.println("Erreur execution requete : " + requete);
+		}
+		return unIntervention;
+	}
+	public static void updateIntervention (Intervention uneIntervention)
+	{
+		String requete = "update intervention set description = '" + uneIntervention.getDescription() + "', prix = '" +uneIntervention.getPrix()
+		+"',dateinter = '"+uneIntervention.getDateinter() + "',idvehicule = '"+ uneIntervention.getIdvehicule() + "',idtechnicien = '"
+		+ uneIntervention.getIdtechnicien()+"' where idintervention = " + uneIntervention.getIdintervention() + ";";
+			
+			try {
+				uneBdd.seConnecter();
+				Statement unStat = uneBdd.getMaConnexion().createStatement();//curseur 
+				unStat.execute(requete);
+				unStat.close();
+				uneBdd.seDeconnecter();
+
+			}
+			catch(SQLException exp)
+			{
+				System.out.println("Erreur execution requete : " + requete);
+			}
 	}
 	
 	}

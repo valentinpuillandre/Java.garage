@@ -90,7 +90,7 @@ public class C_Vehicule
 		public void retirerVehicule ()
 		{
 			//on appelle la vue pour avoir un id client à retirer 
-			int idvehicule = VueVehicule.saisirId();
+			int idvehicule = VueVehicule.saisirIdVehicule();
 			// on appelle le modele pour supprimer de la BDD le client identifié par id 
 			Modele.deleteVehicule(idvehicule);
 		}
